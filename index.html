@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTK Dashboard — Token Savings Analytics</title>
+<meta name="theme-color" content="#050a14">
+<style>
+/* ─── Reset & Base (matches launch page) ─────────── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg:     #050a14;
+  --bg-alt: #080f20;
+  --surface: rgba(255, 255, 255, 0.04);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --border: rgba(255, 255, 255, 0.06);
+  --text:      #e2e8f0;
+  --text-dim:  #64748b;
+  --text-bright: #f8fafc;
+  --green:     #22c55e;
+  --green-bg:  rgba(34, 197, 94, 0.12);
+  --amber:     #f59e0b;
+  --amber-bg:  rgba(245, 158, 11, 0.12);
+  --red:       #ef4444;
+  --accent-1:  rgba(66, 153, 225, 0.30);
+  --accent-2:  rgba(147, 51, 234, 0.25);
+  --radius:    16px;
+  --radius-sm: 10px;
+  --font:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ─── Header ──────────────────────────────────────── */
+.header {
+  padding: 36px 0 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.header h1 { font-size: 1.6rem; font-weight: 300; color: var(--text-bright); letter-spacing: -0.02em; }
+.header h1 span { background: linear-gradient(135deg, #22c55e 0%, #4299e1 50%, #a855f7 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 500; }
+.header p { font-size: 0.8rem; color: var(--text-dim); }
+.header .refresh { font-size: 0.72rem; color: var(--text-dim); cursor: pointer; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 4px 12px; transition: all 0.2s; }
+.header .refresh:hover { border-color: var(--border-hover); color: var(--text); }
+
+/* ─── Hero Stats ──────────────────────────────────── */
+.hero {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+}
+.stat-value {
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.stat-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stat-card.green .stat-value { color: var(--green); }
+.stat-card.blue .stat-value { color: #4299e1; }
+.stat-card.purple .stat-value { color: #a855f7; }
+.stat-card.amber .stat-value { color: var(--amber); }
+
+@media (max-width: 700px) {
+  .hero { grid-template-columns: repeat(2, 1fr); }
+  .stat-value { font-size: 1.5rem; }
+}
+
+/* ─── Section Title ───────────────────────────────── */
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── Chart ───────────────────────────────────────── */
+.chart-container {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(20px);
+  margin-bottom: 24px;
+}
+.chart-container h2 {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-bright);
+  margin-bottom: 16px;
+}
+.chart { width: 100%; overflow-x: auto; }
+.chart svg { width: 100%; min-width: 500px; }
+
+.bar-label { font-size: 10px; fill: var(--text-dim); font-family: var(--font-mono); }
+.bar-value { font-size: 10px; fill: var(--text); font-family: var(--font-mono); font-weight: 500; }
+.bar-rect { transition: opacity 0.2s; }
+.bar-rect:hover { opacity: 0.8; }
+
+/* ─── Table ───────────────────────────────────────── */
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  backdrop-filter: blur(20px);
+  margin-bottom: 24px;
+}
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+.table-wrap th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.table-wrap td {
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  font-variant-numeric: tabular-nums;
+}
+.table-wrap tr:last-child td { border-bottom: none; }
+.table-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+
+.cmd-name { font-family: var(--font-mono); color: var(--text); font-size: 0.78rem; }
+.cmd-count { color: var(--text-dim); }
+.cmd-saved { color: var(--green); font-weight: 500; }
+.cmd-pct { color: var(--text); }
+.cmd-time { color: var(--text-dim); font-family: var(--font-mono); font-size: 0.72rem; }
+
+.impact-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #22c55e, #4299e1);
+  min-width: 2px;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* ─── Gauge ───────────────────────────────────────── */
+.gauge-row {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  padding: 16px 0;
+}
+.gauge {
+  text-align: center;
+}
+.gauge svg { width: 100px; height: 100px; }
+.gauge-label {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 6px;
+}
+
+/* ─── Empty state ─────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+/* ─── Footer ──────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 24px 0 32px;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  letter-spacing: 0.02em;
+}
+.footer a { color: var(--text-dim); text-decoration: none; }
+.footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header class="header">
+    <div>
+      <h1>RTK <span>Dashboard</span></h1>
+      <p>Token savings analytics — monitor AI agent efficiency</p>
+    </div>
+    <button class="refresh" onclick="loadData()">↻ Refresh</button>
+  </header>
+
+  <!-- Hero Stats -->
+  <div class="hero" id="hero"></div>
+
+  <!-- Efficiency Gauges -->
+  <div class="chart-container">
+    <h2>Efficiency</h2>
+    <div class="gauge-row" id="gauges"></div>
+  </div>
+
+  <!-- Daily Savings Chart -->
+  <div class="chart-container">
+    <h2>Daily Token Savings (last 30 days)</h2>
+    <div class="chart" id="chart"></div>
+  </div>
+
+  <!-- Command Breakdown -->
+  <div class="section-title">Command Breakdown</div>
+  <div class="table-wrap" id="cmd-table"></div>
+
+  <div class="footer">
+    Powered by <a href="https://github.com/rtk-ai/rtk" target="_blank">RTK</a> — token savings data auto-refreshed | AI Labs SwarmCraft
+  </div>
+
+</div>
+
+<script>
+/* ─── Data loading ────────────────────────────────── */
+async function loadData() {
+  try {
+    const resp = await fetch("data/rtk-stats.json?t=" + Date.now());
+    const data = await resp.json();
+    render(data);
+    document.querySelector(".refresh").textContent = "↻ Refresh";
+  } catch (e) {
+    document.querySelector(".refresh").textContent = "⚠ Failed";
+    console.error("RTK data load failed:", e);
+  }
+}
+
+/* ─── Formatting ──────────────────────────────────── */
+function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1) + "K" : String(n); }
+function fmtMs(n) { return n >= 1000 ? (n/1000).toFixed(1) + "s" : n + "ms"; }
+function pct(n) { return n.toFixed(1) + "%"; }
+
+/* ─── Hero Stats ──────────────────────────────────── */
+function renderHero(summary) {
+  const hero = document.getElementById("hero");
+  hero.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${summary.total_commands}</div>
+      <div class="stat-label">Commands</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-value">${fmt(summary.total_saved)}</div>
+      <div class="stat-label">Tokens Saved</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-value">${pct(summary.avg_savings_pct)}</div>
+      <div class="stat-label">Efficiency</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-value">${fmtMs(summary.avg_time_ms)}</div>
+      <div class="stat-label">Avg Latency</div>
+    </div>
+  `;
+}
+
+/* ─── Gauges ──────────────────────────────────────── */
+function renderGauges(summary) {
+  const el = document.getElementById("gauges");
+  el.innerHTML = `
+    <div class="gauge">
+      ${svgGauge(summary.avg_savings_pct, "#22c55e")}
+      <div class="gauge-label">Savings %</div>
+    </div>
+    <div class="gauge">
+      ${svgGauge((summary.total_commands > 0 ? (summary.total_saved / summary.total_input * 100) : 0), "#4299e1")}
+      <div class="gauge-label">Token Reduction</div>
+    </div>
+  `;
+}
+
+function svgGauge(value, color) {
+  const angle = Math.max(0, Math.min(value / 100, 1)) * 270;
+  const radians = (angle - 135) * Math.PI / 180;
+  const x = 50 + 35 * Math.cos(radians);
+  const y = 50 + 35 * Math.sin(radians);
+  const largeArc = angle > 180 ? 1 : 0;
+  return `<svg viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+    <path d="M 50 15 A 35 35 0 ${largeArc} 1 ${x} ${y}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>
+    <text x="50" y="46" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="500" font-family="var(--font)">${pct(value)}</text>
+  </svg>`;
+}
+
+/* ─── Daily Chart ─────────────────────────────────── */
+function renderChart(daily) {
+  const el = document.getElementById("chart");
+  if (!daily || daily.length === 0) {
+    el.innerHTML = '<div class="empty">No daily data yet — start using RTK to build history</div>';
+    return;
+  }
+
+  const last30 = daily.slice(-30);
+  const maxVal = Math.max(...last30.map(d => d.saved_tokens), 1);
+
+  const W = 1000, H = 250, pad = { top: 20, right: 20, bottom: 40, left: 60 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+  const barW = Math.max(4, (cw / last30.length) - 4);
+  const gap = (cw - barW * last30.length) / (last30.length + 1);
+
+  let bars = "";
+  last30.forEach((d, i) => {
+    const h = (d.saved_tokens / maxVal) * ch;
+    const x = pad.left + gap + i * (barW + gap);
+    const y = pad.top + ch - h;
+    const date = d.date.slice(5); // MM-DD
+    bars += `
+      <rect class="bar-rect" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}"
+            fill="url(#barGrad)" rx="2" opacity="0.85">
+        <title>${d.date}: ${fmt(d.saved_tokens)} tokens saved (${pct(d.savings_pct)})</title>
+      </rect>
+      <text class="bar-value" x="${(x + barW/2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle">${fmt(d.saved_tokens)}</text>
+      <text class="bar-label" x="${(x + barW/2).toFixed(1)}" y="${H - pad.bottom + 16}" text-anchor="middle">${date}</text>`;
+  });
+
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#22c55e"/>
+      </linearGradient>
+    </defs>
+    <line x1="${pad.left}" y1="${pad.top}" x2="${pad.left}" y2="${pad.top + ch}"
+          stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <line x1="${pad.left}" y1="${pad.top + ch}" x2="${pad.left + cw}" y2="${pad.top + ch}"
+          stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    ${bars}
+  </svg>`;
+}
+
+/* ─── Command Table ───────────────────────────────── */
+function renderTable(summary) {
+  const el = document.getElementById("cmd-table");
+  if (!summary.by_command || summary.by_command.length === 0) {
+    el.innerHTML = '<div class="empty" style="padding:24px">No commands recorded yet</div>';
+    return;
+  }
+
+  const maxSaved = Math.max(...summary.by_command.map(c => c.saved_tokens), 1);
+  let rows = summary.by_command.map(c => {
+    const impactW = Math.max(4, (c.saved_tokens / maxSaved) * 120);
+    return `<tr>
+      <td><span class="cmd-name">${esc(c.command)}</span></td>
+      <td class="cmd-count">${c.count}</td>
+      <td class="cmd-saved">${fmt(c.saved_tokens)} saved</td>
+      <td class="cmd-pct"><span class="impact-bar" style="width:${impactW.toFixed(0)}px"></span>${pct(c.avg_pct)}</td>
+      <td class="cmd-time">${fmtMs(c.avg_time_ms)}</td>
+    </tr>`;
+  }).join("");
+
+  el.innerHTML = `<table>
+    <thead><tr><th>Command</th><th>Count</th><th>Saved</th><th>Avg %</th><th>Latency</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function esc(s) {
+  const div = document.createElement("div");
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+/* ─── Render all ──────────────────────────────────── */
+function render(data) {
+  if (!data || !data.summary) {
+    document.getElementById("hero").innerHTML = '<div class="empty">No RTK data available. Run <code>rtk gain</code> to start collecting.</div>';
+    return;
+  }
+  renderHero(data.summary);
+  renderGauges(data.summary);
+  renderChart(data.daily);
+  renderTable(data.summary);
+}
+
+/* ─── Init ─────────────────────────────────────────── */
+loadData();
+</script>
+</body>
+</html>
