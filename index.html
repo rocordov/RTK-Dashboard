@@ -381,15 +381,16 @@ function renderChart(daily) {
 }
 
 /* ─── Command Table ───────────────────────────────── */
-function renderTable(summary) {
+function renderTable(data) {
   const el = document.getElementById("cmd-table");
-  if (!summary.by_command || summary.by_command.length === 0) {
+  const commands = data.by_command;
+  if (!commands || commands.length === 0) {
     el.innerHTML = '<div class="empty" style="padding:24px">No commands recorded yet</div>';
     return;
   }
 
-  const maxSaved = Math.max(...summary.by_command.map(c => c.saved_tokens), 1);
-  let rows = summary.by_command.map(c => {
+  const maxSaved = Math.max(...commands.map(c => c.saved_tokens), 1);
+  let rows = commands.map(c => {
     const impactW = Math.max(4, (c.saved_tokens / maxSaved) * 120);
     return `<tr>
       <td><span class="cmd-name">${esc(c.command)}</span></td>
@@ -421,7 +422,7 @@ function render(data) {
   renderHero(data.summary);
   renderGauges(data.summary);
   renderChart(data.daily);
-  renderTable(data.summary);
+  renderTable(data);
 }
 
 /* ─── Init ─────────────────────────────────────────── */

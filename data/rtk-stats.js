@@ -1,49 +1,120 @@
 window.__RTK_DATA__ = {
   "summary": {
-    "total_commands": 40,
-    "total_input": 3841,
-    "total_output": 1563,
-    "total_saved": 2303,
-    "avg_savings_pct": 59.95834418120282,
-    "total_time_ms": 13094,
-    "avg_time_ms": 327
+    "total_commands": 87,
+    "total_input": 4649,
+    "total_output": 1969,
+    "total_saved": 2735,
+    "avg_savings_pct": 58.82985588298559,
+    "total_time_ms": 37540,
+    "avg_time_ms": 431
   },
   "daily": [
     {
       "date": "2026-05-04",
-      "commands": 40,
-      "input_tokens": 3841,
-      "output_tokens": 1563,
-      "saved_tokens": 2303,
-      "savings_pct": 59.95834418120282,
-      "total_time_ms": 13094,
-      "avg_time_ms": 327
+      "commands": 87,
+      "input_tokens": 4649,
+      "output_tokens": 1969,
+      "saved_tokens": 2735,
+      "savings_pct": 58.82985588298559,
+      "total_time_ms": 37540,
+      "avg_time_ms": 431
     }
   ],
   "weekly": [
     {
       "week_start": "2026-05-04",
       "week_end": "2026-05-10",
-      "commands": 40,
-      "input_tokens": 3841,
-      "output_tokens": 1563,
-      "saved_tokens": 2303,
-      "savings_pct": 59.95834418120282,
-      "total_time_ms": 13094,
-      "avg_time_ms": 327
+      "commands": 87,
+      "input_tokens": 4649,
+      "output_tokens": 1969,
+      "saved_tokens": 2735,
+      "savings_pct": 58.82985588298559,
+      "total_time_ms": 37540,
+      "avg_time_ms": 431
     }
   ],
   "monthly": [
     {
       "month": "2026-05",
-      "commands": 40,
-      "input_tokens": 3841,
-      "output_tokens": 1563,
-      "saved_tokens": 2303,
-      "savings_pct": 59.95834418120282,
-      "total_time_ms": 13094,
-      "avg_time_ms": 327
+      "commands": 87,
+      "input_tokens": 4649,
+      "output_tokens": 1969,
+      "saved_tokens": 2735,
+      "savings_pct": 58.82985588298559,
+      "total_time_ms": 37540,
+      "avg_time_ms": 431
+    }
+  ],
+  "by_command": [
+    {
+      "command": "rtk git status",
+      "count": 13,
+      "saved_tokens": 1200,
+      "avg_pct": 52.0,
+      "avg_time_ms": 26
+    },
+    {
+      "command": "rtk ls -la .",
+      "count": 2,
+      "saved_tokens": 483,
+      "avg_pct": 78.4,
+      "avg_time_ms": 4
+    },
+    {
+      "command": "rtk ls -la src/",
+      "count": 2,
+      "saved_tokens": 354,
+      "avg_pct": 76.6,
+      "avg_time_ms": 5
+    },
+    {
+      "command": "rtk git commit",
+      "count": 5,
+      "saved_tokens": 192,
+      "avg_pct": 96.1,
+      "avg_time_ms": 21
+    },
+    {
+      "command": "rtk ls -la /Users/roc...",
+      "count": 1,
+      "saved_tokens": 88,
+      "avg_pct": 84.6,
+      "avg_time_ms": 6
+    },
+    {
+      "command": "rtk test -f /Users/ro...",
+      "count": 1,
+      "saved_tokens": 68,
+      "avg_pct": 62.4,
+      "avg_time_ms": 4
+    },
+    {
+      "command": "rtk ls -la /Users/roc...",
+      "count": 1,
+      "saved_tokens": 64,
+      "avg_pct": 81.0,
+      "avg_time_ms": 6
+    },
+    {
+      "command": "rtk ls -la /Users/roc...",
+      "count": 1,
+      "saved_tokens": 61,
+      "avg_pct": 79.2,
+      "avg_time_ms": 4
+    },
+    {
+      "command": "rtk git push",
+      "count": 3,
+      "saved_tokens": 56,
+      "avg_pct": 90.3,
+      "avg_time_ms": 1200
+    },
+    {
+      "command": "rtk ls -la /Users/roc...",
+      "count": 1,
+      "saved_tokens": 40,
+      "avg_pct": 90.9,
+      "avg_time_ms": 6
     }
   ]
-}
-;
+};
