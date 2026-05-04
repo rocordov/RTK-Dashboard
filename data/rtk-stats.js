@@ -1,4 +1,4 @@
-{
+window.__RTK_DATA__ = {
   "summary": {
     "total_commands": 40,
     "total_input": 3841,
@@ -46,3 +46,4 @@
     }
   ]
 }
+;

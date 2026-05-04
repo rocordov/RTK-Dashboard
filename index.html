@@ -231,13 +231,12 @@ html, body {
 </head>
 <body>
 <div class="wrapper">
-
   <header class="header">
     <div>
       <h1>RTK <span>Dashboard</span></h1>
       <p>Token savings analytics — monitor AI agent efficiency</p>
     </div>
-    <button class="refresh" onclick="loadData()">↻ Refresh</button>
+    <span class="updated" id="updated"></span>
   </header>
 
   <!-- Hero Stats -->
@@ -265,17 +264,17 @@ html, body {
 
 </div>
 
+<script src="data/rtk-stats.js"></script>
 <script>
 /* ─── Data loading ────────────────────────────────── */
-async function loadData() {
-  try {
-    const resp = await fetch("data/rtk-stats.json?t=" + Date.now());
-    const data = await resp.json();
-    render(data);
-    document.querySelector(".refresh").textContent = "↻ Refresh";
-  } catch (e) {
-    document.querySelector(".refresh").textContent = "⚠ Failed";
-    console.error("RTK data load failed:", e);
+function loadData() {
+  if (window.__RTK_DATA__) {
+    render(window.__RTK_DATA__);
+    document.getElementById("updated").textContent =
+      "Updated " + new Date().toLocaleTimeString();
+  } else {
+    document.getElementById("hero").innerHTML =
+      '<div class="empty">No RTK data available. Run <code>./refresh.sh</code> to generate initial data.</div>';
   }
 }
 
